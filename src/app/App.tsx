@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { motion } from "motion/react";
+import { Analytics } from "@vercel/analytics/react";
 import { Btn } from "./components/ui/btn";
 import { Stepper as StepperComp, HorizontalSwapStepper, type StepDef } from "./components/ui/stepper";
 import { TopNavDesktop, TopNavMobile } from "./components/ui/hs-nav";
@@ -4334,6 +4335,7 @@ export default function App() {
         </main>
       </div>
     </div>
+    <Analytics />
     </AppNavContext.Provider>
   );
 }
