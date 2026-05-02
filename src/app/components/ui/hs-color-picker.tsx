@@ -33,25 +33,30 @@ export function hsvToHex(h: number, s: number, v: number): string {
 
 /* ─── ColorPicker ─────────────────────────────────────────── */
 
+// Persists recently used colors across mount/unmount cycles.
+let _recent: string[] = [];
+
 export interface ColorPickerProps {
   color: string;
+  /** Fires on every drag move — use for live preview updates. */
   onChange: (hex: string) => void;
+  /** Called when user clicks outside the picker. Use to close it. */
+  onClose?: () => void;
   recentColors?: string[];
   anchorRect?: DOMRect | null;
-  onClose?: () => void;
 }
 
 export function ColorPicker({
   color,
   onChange,
-  recentColors = [],
-  anchorRect,
   onClose,
+  anchorRect,
 }: ColorPickerProps) {
   const [hue, setHue] = useState(() => hexToHsv(color)[0]);
   const [sat, setSat] = useState(() => hexToHsv(color)[1]);
   const [val, setVal] = useState(() => hexToHsv(color)[2]);
   const [hexInput, setHexInput] = useState(color.toUpperCase());
+  const [recentColors, setRecentColors] = useState<string[]>(() => [..._recent]);
 
   const pickerRef    = useRef<HTMLDivElement>(null);
   const svRef        = useRef<HTMLDivElement>(null);
@@ -60,8 +65,14 @@ export function ColorPicker({
   // Tracks whether the last color change originated from inside this component.
   // Used to skip syncing internal state when the parent echoes back our own onChange.
   const internalRef  = useRef(false);
+  // Stable refs so the outside-click handler (registered once) always reads the
+  // latest color and onClose without re-registering on every drag-move render.
+  const onCloseRef   = useRef(onClose);
+  const currentHexRef = useRef(color);
+  onCloseRef.current  = onClose;
 
   const currentHex = hsvToHex(hue, sat, val);
+  currentHexRef.current = currentHex;
 
   // Sync when color prop changes from outside (e.g. preset swatch selected by parent)
   useEffect(() => {
@@ -74,15 +85,18 @@ export function ColorPicker({
     setHexInput(color.toUpperCase());
   }, [color]);
 
-  // Close on outside click
+  // Register once — reads latest values via refs to avoid re-registering on every drag render.
   useEffect(() => {
-    if (!onClose) return;
     function handle(e: MouseEvent) {
-      if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) onClose?.();
+      if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
+        const hex = currentHexRef.current;
+        _recent = [hex, ..._recent.filter(c => c !== hex)].slice(0, 12);
+        onCloseRef.current?.();
+      }
     }
     document.addEventListener("mousedown", handle);
     return () => document.removeEventListener("mousedown", handle);
-  }, [onClose]);
+  }, []);
 
   function emit(hex: string) {
     internalRef.current = true;
@@ -158,7 +172,7 @@ export function ColorPicker({
         left: Math.min(anchorRect.right - 280, window.innerWidth - 296),
         zIndex: 9999,
       }
-    : { position: "relative" };
+    : {};
 
   return (
     <div
@@ -166,8 +180,8 @@ export function ColorPicker({
       style={{
         ...posStyle,
         width: 280,
-        background: "var(--bg)",
-        border: "1px solid var(--border)",
+        background: "var(--color-bg-main)",
+        border: "1px solid var(--color-element-subtle)",
         borderRadius: "var(--radius-lg)",
         boxShadow: "var(--shadow-lg, 0 12px 24px rgba(5,32,81,.12), 0 4px 8px rgba(5,32,81,.06))",
         padding: "var(--space-4)",
@@ -268,11 +282,11 @@ export function ColorPicker({
       <div style={{ display: "flex", gap: "var(--space-2)", alignItems: "center" }}>
         <div style={{
           padding: "var(--space-2) var(--space-3)",
-          border: "1px solid var(--border)",
+          border: "1px solid var(--color-element-subtle)",
           borderRadius: "var(--radius-md)",
           fontSize: "var(--font-size-body-13)",
           fontWeight: 500,
-          color: "var(--fg)",
+          color: "var(--color-text-primary)",
           background: "var(--bg-input)",
           flexShrink: 0,
           userSelect: "none",
@@ -289,7 +303,7 @@ export function ColorPicker({
           width: 28, height: 28,
           borderRadius: "var(--radius-sm)",
           background: currentHex,
-          border: "1px solid var(--border)",
+          border: "1px solid var(--color-element-subtle)",
           flexShrink: 0,
         }} />
       </div>
@@ -302,7 +316,7 @@ export function ColorPicker({
             <p style={{
               fontSize: "var(--font-size-body-13)",
               fontWeight: 600,
-              color: "var(--muted-fg)",
+              color: "var(--color-text-secondary)",
               margin: "0 0 var(--space-3)",
             }}>
               Recently used colors
@@ -319,8 +333,8 @@ export function ColorPicker({
                     borderRadius: "var(--radius-sm)",
                     background: c,
                     border: c.toLowerCase() === currentHex.toLowerCase()
-                      ? "2px solid var(--fg)"
-                      : "1px solid var(--border)",
+                      ? "2px solid var(--color-text-primary)"
+                      : "1px solid var(--color-element-subtle)",
                     cursor: "pointer",
                     flexShrink: 0,
                     padding: 0,

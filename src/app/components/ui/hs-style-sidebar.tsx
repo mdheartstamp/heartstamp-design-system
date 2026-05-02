@@ -1076,7 +1076,6 @@ function SignaturePanel({ onClose }: SignaturePanelProps) {
   const canvasRef                         = useRef<HTMLCanvasElement | null>(null);
   const isDrawing                   = useRef(false);
   const lastPos                     = useRef<{ x: number; y: number } | null>(null);
-
   uploadedUrlRef.current   = uploadedUrl;
   uploadPreviewRef.current = uploadPreview;
 
@@ -1181,6 +1180,9 @@ function SignaturePanel({ onClose }: SignaturePanelProps) {
 
   function handleColorChange(hex: string) {
     setSigColor(hex);
+  }
+
+  function handleColorCommit(hex: string) {
     setRecentColors(prev => [hex, ...prev.filter(c => c !== hex)].slice(0, 12));
   }
 
@@ -1206,7 +1208,7 @@ function SignaturePanel({ onClose }: SignaturePanelProps) {
         {SIG_COLORS.map(c => (
           <button
             key={c.hex}
-            onClick={() => { setSigColor(c.hex); setPickerOpen(false); }}
+            onClick={() => { setSigColor(c.hex); handleColorCommit(c.hex); setPickerOpen(false); }}
             style={{
               width: "var(--space-6)", height: "var(--space-6)",
               borderRadius: "50%",
@@ -2698,7 +2700,6 @@ function SignatureMobileSheet({ onClose, onSaveReady }: SignatureMobileSheetProp
   const canvasRef       = useRef<HTMLCanvasElement | null>(null);
   const isDrawing       = useRef(false);
   const lastPos         = useRef<{ x: number; y: number } | null>(null);
-
   uploadedUrlRef.current   = uploadedUrl;
   uploadPreviewRef.current = uploadPreview;
 
@@ -2823,6 +2824,9 @@ function SignatureMobileSheet({ onClose, onSaveReady }: SignatureMobileSheetProp
 
   function handleColorChange(hex: string) {
     setSigColor(hex);
+  }
+
+  function handleColorCommit(hex: string) {
     setRecentColors(prev => [hex, ...prev.filter(c => c !== hex)].slice(0, 12));
   }
 
@@ -2836,7 +2840,7 @@ function SignatureMobileSheet({ onClose, onSaveReady }: SignatureMobileSheetProp
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
         {SIG_COLORS.map(c => (
-          <button key={c.hex} onClick={() => { setSigColor(c.hex); setPickerOpen(false); }} style={{
+          <button key={c.hex} onClick={() => { setSigColor(c.hex); handleColorCommit(c.hex); setPickerOpen(false); }} style={{
             width: "var(--space-6)", height: "var(--space-6)", borderRadius: "50%",
             background: c.hex, border: "none",
             outline: sigColor === c.hex ? "2px solid var(--fg)" : "2px solid transparent",
