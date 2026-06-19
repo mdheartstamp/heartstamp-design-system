@@ -149,13 +149,13 @@ export function ProfileNavDesktop({ theme, setTheme }: { theme: Theme; setTheme:
       <PnUserHeader />
       <div style={{ borderTop: "1px solid var(--color-element-subtle)" }}>
         <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-1-5)", padding: "var(--space-3) 0" }}>
-          <PnNavRow icon={<Palette size={16} />}        label="My cards" />
+          <PnNavRow icon={<Palette size={16} />}        label="My drafts" />
           <PnDivider />
           <PnNavRow icon={<Settings size={16} />}       label="Settings" />
           <PnThemeRow theme={theme} setTheme={setTheme} />
           <PnNavRow icon={<AtSign size={16} />}         label="Addresses" />
           <PnNavRow icon={<CalendarCheck size={16} />}  label="Reminders" />
-          <PnNavRow icon={<History size={16} />}        label="Order history" />
+          <PnNavRow icon={<History size={16} />}        label="My orders" />
         </div>
       </div>
       <div style={{ borderTop: "1px solid var(--color-element-subtle)", padding: "var(--space-3) 0" }}>
@@ -194,7 +194,7 @@ export function ProfileNavMobile({ theme, setTheme }: { theme: Theme; setTheme: 
       <div style={{ borderTop: "1px solid var(--color-element-subtle)" }}>
         <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-1-5)", padding: "var(--space-3) 0" }}>
           <PnNavRow icon={<Home size={16} />}          label="Home" />
-          <PnNavRow icon={<Palette size={16} />}       label="My cards" />
+          <PnNavRow icon={<Palette size={16} />}       label="My drafts" />
           <PnDivider />
           <PnNavRow icon={<Settings size={16} />}      label="Settings" />
           <PnNavRow icon={<Bell size={16} />}          label="Notifications" />
@@ -203,7 +203,7 @@ export function ProfileNavMobile({ theme, setTheme }: { theme: Theme; setTheme: 
           <PnDivider />
           <PnNavRow icon={<AtSign size={16} />}        label="Addresses" />
           <PnNavRow icon={<Calendar size={16} />}      label="Reminders" />
-          <PnNavRow icon={<History size={16} />}       label="Order history" />
+          <PnNavRow icon={<History size={16} />}       label="My orders" />
           <PnDivider />
           <PnSignOutRow />
         </div>
